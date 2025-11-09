@@ -1,17 +1,43 @@
 import os
+import platform
 import sqlite3
+from pathlib import Path
 
-DATA_PATH = f"/home/{os.environ.get('USER')}/.config/obsidian_to_bookstack/data"
+
+def get_config_dir():
+    """Get cross-platform config directory"""
+    system = platform.system()
+    if system == "Windows":
+        # Use APPDATA on Windows
+        appdata = os.environ.get("APPDATA")
+        if appdata:
+            return Path(appdata) / "obsidian_to_bookstack"
+        # Fallback to LOCALAPPDATA if APPDATA is not set
+        localappdata = os.environ.get("LOCALAPPDATA")
+        if localappdata:
+            return Path(localappdata) / "obsidian_to_bookstack"
+        # Last resort: use user home directory
+        return Path.home() / ".config" / "obsidian_to_bookstack"
+    else:
+        # Linux/Mac: use XDG_CONFIG_HOME if set, otherwise ~/.config
+        config_home = os.environ.get("XDG_CONFIG_HOME")
+        if config_home:
+            return Path(config_home) / "obsidian_to_bookstack"
+        return Path.home() / ".config" / "obsidian_to_bookstack"
+
+
+DATA_PATH = get_config_dir() / "data"
+
 
 def connect():
-    conn = sqlite3.connect(f"{DATA_PATH}/settings.db")
+    conn = sqlite3.connect(str(DATA_PATH / "settings.db"))
     cursor = conn.cursor()
     return conn, cursor
 
 
 def make_data_folder():
-    if not os.path.exists(DATA_PATH):
-        os.mkdir(DATA_PATH)
+    if not DATA_PATH.exists():
+        DATA_PATH.mkdir(parents=True, exist_ok=True)
 
 
 def create_settings_if_not_exists():

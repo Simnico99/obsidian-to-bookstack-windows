@@ -69,7 +69,7 @@ class LocalBookCollector(LocalCollector):
 
         for book in missing_books:
             path = os.path.join(self.path, book.shelf.name, book.name)
-            os.mkdir(path)
+            os.makedirs(path, exist_ok=True)
 
             if self.verbose:
                 console.log(f"Creating a book at: {path}")

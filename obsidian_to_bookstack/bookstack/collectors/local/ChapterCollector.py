@@ -35,7 +35,7 @@ class LocalChapterCollector(LocalCollector):
                 )
                 if self.verbose:
                     console.log(f"Creating a chapter at: {path}")
-                os.mkdir(path)
+                os.makedirs(path, exist_ok=True)
 
     def create_remote_missing_chapters(self):
         """Create any chapters in the remote which are missing"""

@@ -39,7 +39,7 @@ class LocalShelfCollector(LocalCollector):
         missing_shelves = self._get_missing_set(BookstackItems.SHELF, SyncType.LOCAL)
         for shelf in missing_shelves:
             path = os.path.join(self.path, shelf.name)
-            os.mkdir(path)
+            os.makedirs(path, exist_ok=True)
 
             if self.verbose:
                 console.log(f"Creating a shelf at: {path}")
